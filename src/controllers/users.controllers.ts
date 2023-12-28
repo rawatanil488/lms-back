@@ -15,8 +15,10 @@ export const login = async (req: express.Request, res: express.Response) => {
         if (!user) {
             return res.status(404).send(`User with email ${email} not foud, kindly register`);
         }
-
-        const expectedHash = authentication(user.authentication.salt, password);
+        let expectedHash = "";
+        if (typeof(user.authentication?.salt) === 'string') {
+            expectedHash = authentication(user.authentication.salt, password);
+        }
 
         if (user.authentication?.password !== expectedHash) {
             return res.sendStatus(403);
@@ -72,7 +74,7 @@ export const deleteUser = async (req: express.Request, res: express.Response) =>
     try {
         const {id} = req.params;
         const deletedUser = await deleteUserById(id);
-        return res.json(deleteUser);
+        return res.json(deletedUser);
     } catch (error) {
         console.error(error);
         return res.sendStatus(400);
@@ -91,7 +93,7 @@ export const updateUser =async (req: express.Request, res: express.Response) => 
 
         const user = await getUserById(id);
 
-        user.username = username;
+        if (user) user.username = username;
         await user?.save();
 
         return res.status(200).json(user).end();
