@@ -1,5 +1,5 @@
 import express from 'express';
-import { createUser, getUsersByEmail } from '../services/users.services';
+import { createUser, deleteUserById, getUserById, getUsersByEmail } from '../services/users.services';
 import { random, authentication } from '../helpers';
 
 export const login = async (req: express.Request, res: express.Response) => {
@@ -26,13 +26,13 @@ export const login = async (req: express.Request, res: express.Response) => {
 
         await user.save();
 
-        res.cookie('RWT-AUTH', user.authentication?.sessionToken, {domain: "localhost", path:'/'})
+        res.cookie('RWT-AUTH', user.authentication.sessionToken, {domain: "localhost", path:'/'})
 
         return res.status(200).json({
             "email": user.email,
             "username": user.username,
             "id": user._id,
-            "sess-id": user.authentication?.sessionToken
+            "sess-id": user.authentication.sessionToken
         }).end();
 
     } catch (error) {
@@ -63,6 +63,40 @@ export const register = async (req: express.Request, res: express.Response) => {
         })
         return res.status(200).json(user).end();
     } catch (error) {
-        
+        console.error(error);
+        return res.sendStatus(400);
+    }
+}
+
+export const deleteUser = async (req: express.Request, res: express.Response) => {
+    try {
+        const {id} = req.params;
+        const deletedUser = await deleteUserById(id);
+        return res.json(deleteUser);
+    } catch (error) {
+        console.error(error);
+        return res.sendStatus(400);
+    }
+}
+
+export const updateUser =async (req: express.Request, res: express.Response) => {
+    try {
+
+        const { id } = req.params;
+        const { username } = req.body;
+
+        if (!username) {
+            return res.sendStatus(400);
+        }
+
+        const user = await getUserById(id);
+
+        user.username = username;
+        await user?.save();
+
+        return res.status(200).json(user).end();
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
     }
 }
