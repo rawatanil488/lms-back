@@ -1,5 +1,6 @@
 import express from 'express';
 import { register, login, deleteUser, updateUser } from './controllers/users.controllers';
+import { authorDetails, updateAuthor, deleteAuthor } from './controllers/authors.controllers';
 
 const router = express.Router();
 
@@ -9,5 +10,12 @@ export default () : express.Router => {
     router.post('/auth/login', login);
     router.delete('/users/:id', deleteUser);
     router.patch('/users/:id', updateUser);
+
+    // Author Routes
+    router.get('/author/:id', authorDetails);
+    router.put('/author/:id', updateAuthor);
+    router.delete('/author/:id', deleteAuthor);
+
+
     return router;
 }
