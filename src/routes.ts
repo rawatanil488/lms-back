@@ -1,6 +1,6 @@
 import express from 'express';
 import { register, login, deleteUser, updateUser } from './controllers/users.controllers';
-import { authorDetails, updateAuthor, deleteAuthor } from './controllers/authors.controllers';
+import { authorDetails, updateAuthor, deleteAuthor, createAuthor } from './controllers/authors.controllers';
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ export default () : express.Router => {
     router.get('/author/:id', authorDetails);
     router.put('/author/:id', updateAuthor);
     router.delete('/author/:id', deleteAuthor);
-
+    router.post('/author', createAuthor);
 
     return router;
 }
